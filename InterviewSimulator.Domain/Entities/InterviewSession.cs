@@ -18,5 +18,29 @@ namespace InterviewSimulator.Domain.Entities
         public double AverageScore => _questions.Any(q => q.IsAnswered)
             ? Math.Round(_questions.Where(q => q.IsAnswered).Average(q => q.Score!.Value), 1)
             : 0.0;
+
+
+        private InterviewSession() { }
+
+        public InterviewSession(string targetRole, DifficultyLevel difficulty)
+        {
+            if (string.IsNullOrWhiteSpace(targetRole))
+                throw new ArgumentException("Target role cannot be empty.", nameof(targetRole));
+
+            Id = Guid.NewGuid();
+            TargetRole = targetRole.Trim();
+            Difficulty = difficulty;
+            CreatedAt = DateTime.UtcNow;
+        }
+
+        public void AddQuestions(IEnumerable<string> questionContents)
+        {
+            int index = 1;
+            foreach (var content in questionContents)
+            {
+                _questions.Add(new Question(Id, index++, content));
+            }
+        }
+
     }
 }
